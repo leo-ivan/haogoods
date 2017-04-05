@@ -4,12 +4,7 @@
     <!--类目滚动选择-->
     <scroller lock-y :scrollbar-x=false>
       <div class="box1">
-        <div class="box1-item"><span @click="selectFun('')" :class="{ 'on-choose': this.type === '' }">推荐</span></div>
-        <div class="box1-item"><span @click="selectFun('五元购')" :class="{ 'on-choose': this.type === '五元购' }">五元购</span></div>
-        <div class="box1-item"><span @click="selectFun('生活')" :class="{ 'on-choose': this.type === '生活' }">生活</span></div>
-        <div class="box1-item"><span @click="selectFun('男士')" :class="{ 'on-choose': this.type === '男士' }">男士</span></div>
-        <div class="box1-item"><span @click="selectFun('女士')" :class="{ 'on-choose': this.type === '女士' }">女士</span></div>
-        <div class="box1-item"><span @click="selectFun('数码')" :class="{ 'on-choose': this.type === '数码' }">数码</span></div>
+        <div class="box1-item" v-for="item in types"><span @click="selectFun(item)">{{item}}</span></div>
       </div>
     </scroller>
     <!--商品列表-->
@@ -22,7 +17,7 @@
                 <div class="soldout-mark"></div>
             </div>
             <div class="item-main">
-                <div class="item-info">   
+                <div class="item-info">
                     <h3 class="item-title">{{item.tittle}}</h3>
                 </div>
                 <div class="item-imp">
@@ -31,7 +26,7 @@
                         <div class="item-price">
                             <b class="promotion-price">{{item.first_price}}</b>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
           </a>
@@ -65,11 +60,12 @@
       },
     directives: {InfiniteScroll},
     mounted () {
-     // this.$store.dispatch('fetchIndexLists')
+
     },
     data () {
       return {
         results: [],
+        types:["","五元购","生活","男士","女士","数码"],
         value: '',
         type: '',
         busy: false,
@@ -86,19 +82,17 @@
       Scroller,
       Toast,
       Loading,
-      Alert                                                                                         
+      Alert
     },
     methods: {
       selectFun (value) {
         this.isShowLoading = true
-        let params = {pms: `{"type":"${value}"}`}
         this.type = value
-        this.$store.dispatch('fetchIndexClickLists',params)
+        this.$store.dispatch('fetchIndexClickLists',{pms: `{"type":"${value}"}`})
         this.isShowLoading = false
       },
       resultClick (item) {
-        let params = {pms: `{"key_world":"${item.title}"}`}
-        this.$store.dispatch('fetchIndexClickLists',params)
+        this.$store.dispatch('fetchIndexClickLists',{pms: `{"key_world":"${item.title}"}`})
         this.type = ''
       },
       getResult (val) {
@@ -107,8 +101,7 @@
       loadMore(){
         this.busy = true
         this.isShowLoading = true
-        let params = {pms: `{"type":"${this.type}","last_id":"${this.lastId}"}`}
-        this.$store.dispatch('fetchIndexSelectLists',params)
+        this.$store.dispatch('fetchIndexSelectLists',{pms: `{"type":"${this.type}","last_id":"${this.lastId}"}`})
         this.busy = false
         this.isShowLoading = false
       }
